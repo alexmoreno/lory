@@ -174,9 +174,9 @@ export function lory (slider, opts) {
          * update the index with the nextIndex only if
          * the offset of the nextIndex is in the range of the maxOffset
          */
-        if (slides[nextIndex].offsetLeft <= maxOffset) {
+        
             index = nextIndex;
-        }
+        
 
         if (infinite && (nextIndex === slides.length - infinite || nextIndex === 0)) {
             if (direction) {
