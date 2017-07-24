@@ -31,7 +31,7 @@ export function lory (slider, opts) {
     if (typeof jQuery !== 'undefined' && slider instanceof jQuery) {
         slider = slider[0];
     }
-
+    
     /**
      * private
      * set active class to element which is the current slide
@@ -151,8 +151,11 @@ export function lory (slider, opts) {
         if (infinite && direction === undefined) {
             nextIndex += infinite;
         }
-
-        let nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
+        //console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
+        //console.log('maxOffset: ', slides[nextIndex].offsetLeft)
+        //let nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
+        // I hope it doesn't bug anywhere
+        let nextOffset = slides[nextIndex].offsetLeft * -1;
 
         if (rewind && Math.abs(position.x) === maxOffset && direction) {
             nextOffset = 0;
@@ -175,10 +178,18 @@ export function lory (slider, opts) {
          * the offset of the nextIndex is in the range of the maxOffset
          */
         
+        //console.log('next Index', nextIndex)
+        //console.log('index', index)
+
+        //if (slides[nextIndex].offsetLeft <= maxOffset) {
+        
+            //index = nextIndex;
+        //}
+        
             index = nextIndex;
         
-
         if (infinite && (nextIndex === slides.length - infinite || nextIndex === 0)) {
+
             if (direction) {
                 index = infinite;
             }
@@ -186,8 +197,9 @@ export function lory (slider, opts) {
             if (!direction) {
                 index = slides.length - (infinite * 2);
             }
-
+            //console.log('slide', slides[index])
             position.x = slides[index].offsetLeft * -1;
+
 
             transitionEndCallback = function () {
                 translate(slides[index].offsetLeft * -1, 0, undefined);
@@ -211,8 +223,7 @@ export function lory (slider, opts) {
         dispatchSliderEvent('before', 'init');
 
         prefixes = detectPrefixes();
-        options = {...defaults, ...opts};
-
+        options = Object.assign({}, defaults, opts);        
         const {
             classNameFrame,
             classNameSlideContainer,
