@@ -94,18 +94,28 @@ export function lory (slider, opts) {
      * @duration  {number} time in milliseconds for the transistion
      * @ease      {string} easing css property
      */
-    function translate (to, duration, ease) {
+    function translate (to, duration, ease, endOfThing) {
         const style = slideContainer && slideContainer.style;
 
         if (style) {
-            style[prefixes.transition + 'TimingFunction'] = ease;
-            style[prefixes.transition + 'Duration'] = duration + 'ms';
-
-            if (prefixes.hasTranslate3d) {
-                style[prefixes.transform] = 'translate3d(' + to + 'px, 0, 0)';
+            if (typeof endOfThing !== 'undefined') {
+                setTimeout(function(){
+                    doTranslation(to, duration, ease, style)
+                }, 600)
             } else {
-                style[prefixes.transform] = 'translate(' + to + 'px, 0)';
+                doTranslation(to, duration, ease, style)    
             }
+        }
+    }
+
+    function doTranslation(to, duration, ease, style){
+        style[prefixes.transition + 'TimingFunction'] = ease;
+        style[prefixes.transition + 'Duration'] = duration + 'ms';
+
+        if (prefixes.hasTranslate3d) {
+            style[prefixes.transform] = 'translate3d(' + to + 'px, 0, 0)';
+        } else {
+            style[prefixes.transform] = 'translate(' + to + 'px, 0)';
         }
     }
 
@@ -132,7 +142,7 @@ export function lory (slider, opts) {
 
         const nextSlide = direction ? index + 1 : index - 1;
         const maxOffset = Math.round(slidesWidth - frameWidth);
-
+        //console.log('LETS SLIDE')
         dispatchSliderEvent('before', 'slide', {
             index,
             nextSlide
@@ -162,7 +172,6 @@ export function lory (slider, opts) {
             nextIndex = 0;
             duration = rewindSpeed;
         }
-
         /**
          * translate to the nextOffset by a defined duration and ease function
          */
@@ -181,13 +190,13 @@ export function lory (slider, opts) {
         //console.log('next Index', nextIndex)
         //console.log('index', index)
 
-        //if (slides[nextIndex].offsetLeft <= maxOffset) {
-        
-            //index = nextIndex;
-        //}
+        if (slides[nextIndex].offsetLeft <= maxOffset) {
         
             index = nextIndex;
+        }
         
+            
+        //console.log('direction', direction)
         if (infinite && (nextIndex === slides.length - infinite || nextIndex === 0)) {
 
             if (direction) {
@@ -197,22 +206,34 @@ export function lory (slider, opts) {
             if (!direction) {
                 index = slides.length - (infinite * 2);
             }
-            //console.log('slide', slides[index])
+            
             position.x = slides[index].offsetLeft * -1;
 
 
             transitionEndCallback = function () {
-                translate(slides[index].offsetLeft * -1, 0, undefined);
+
+                translate(slides[index].offsetLeft * -1, 0, undefined, true);
             };
+
+             if (classNameActiveSlide) {
+                setActiveElement(slice.call(slides), index);
+            }
+
+            dispatchSliderEvent('after', 'slide', {
+                currentSlide: index
+            });
+        }
+        else{
+            if (classNameActiveSlide) {
+                setActiveElement(slice.call(slides), index);
+            }
+
+            dispatchSliderEvent('after', 'slide', {
+                currentSlide: index
+            });
         }
 
-        if (classNameActiveSlide) {
-            setActiveElement(slice.call(slides), index);
-        }
-
-        dispatchSliderEvent('after', 'slide', {
-            currentSlide: index
-        });
+       
     }
 
     /**
