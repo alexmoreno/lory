@@ -85,9 +85,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /* globals jQuery */
-	
 	exports.lory = lory;
 	
 	var _detectPrefixes = __webpack_require__(2);
@@ -104,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var slice = Array.prototype.slice;
+	var slice = Array.prototype.slice; /* globals jQuery */
 	
 	function lory(slider, opts) {
 	    var position = void 0;
@@ -197,18 +194,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @duration  {number} time in milliseconds for the transistion
 	     * @ease      {string} easing css property
 	     */
-	    function translate(to, duration, ease) {
+	    function translate(to, duration, ease, endOfThing) {
 	        var style = slideContainer && slideContainer.style;
 	
 	        if (style) {
-	            style[prefixes.transition + 'TimingFunction'] = ease;
-	            style[prefixes.transition + 'Duration'] = duration + 'ms';
-	
-	            if (prefixes.hasTranslate3d) {
-	                style[prefixes.transform] = 'translate3d(' + to + 'px, 0, 0)';
+	            if (typeof endOfThing !== 'undefined') {
+	                setTimeout(function () {
+	                    doTranslation(to, duration, ease, style);
+	                }, 600);
 	            } else {
-	                style[prefixes.transform] = 'translate(' + to + 'px, 0)';
+	                doTranslation(to, duration, ease, style);
 	            }
+	        }
+	    }
+	
+	    function doTranslation(to, duration, ease, style) {
+	        style[prefixes.transition + 'TimingFunction'] = ease;
+	        style[prefixes.transition + 'Duration'] = duration + 'ms';
+	
+	        if (prefixes.hasTranslate3d) {
+	            style[prefixes.transform] = 'translate3d(' + to + 'px, 0, 0)';
+	        } else {
+	            style[prefixes.transform] = 'translate(' + to + 'px, 0)';
 	        }
 	    }
 	
@@ -235,7 +242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        var nextSlide = direction ? index + 1 : index - 1;
 	        var maxOffset = Math.round(slidesWidth - frameWidth);
-	
+	        //console.log('LETS SLIDE')
 	        dispatchSliderEvent('before', 'slide', {
 	            index: index,
 	            nextSlide: nextSlide
@@ -254,15 +261,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (infinite && direction === undefined) {
 	            nextIndex += infinite;
 	        }
-	
-	        var nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
+	        //console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
+	        //console.log('maxOffset: ', slides[nextIndex].offsetLeft)
+	        //let nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
+	        // I hope it doesn't bug anywhere
+	        var nextOffset = slides[nextIndex].offsetLeft * -1;
 	
 	        if (rewind && Math.abs(position.x) === maxOffset && direction) {
 	            nextOffset = 0;
 	            nextIndex = 0;
 	            duration = rewindSpeed;
 	        }
-	
 	        /**
 	         * translate to the nextOffset by a defined duration and ease function
 	         */
@@ -277,11 +286,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * update the index with the nextIndex only if
 	         * the offset of the nextIndex is in the range of the maxOffset
 	         */
+	
+	        //console.log('next Index', nextIndex)
+	        //console.log('index', index)
+	
 	        if (slides[nextIndex].offsetLeft <= maxOffset) {
+	
 	            index = nextIndex;
 	        }
 	
+	        //console.log('direction', direction)
 	        if (infinite && (nextIndex === slides.length - infinite || nextIndex === 0)) {
+	
 	            if (direction) {
 	                index = infinite;
 	            }
@@ -293,17 +309,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	            position.x = slides[index].offsetLeft * -1;
 	
 	            transitionEndCallback = function transitionEndCallback() {
-	                translate(slides[index].offsetLeft * -1, 0, undefined);
+	
+	                translate(slides[index].offsetLeft * -1, 0, undefined, true);
 	            };
-	        }
 	
-	        if (classNameActiveSlide) {
-	            setActiveElement(slice.call(slides), index);
-	        }
+	            if (classNameActiveSlide) {
+	                setActiveElement(slice.call(slides), index);
+	            }
 	
-	        dispatchSliderEvent('after', 'slide', {
-	            currentSlide: index
-	        });
+	            dispatchSliderEvent('after', 'slide', {
+	                currentSlide: index
+	            });
+	        } else {
+	            if (classNameActiveSlide) {
+	                setActiveElement(slice.call(slides), index);
+	            }
+	
+	            dispatchSliderEvent('after', 'slide', {
+	                currentSlide: index
+	            });
+	        }
 	    }
 	
 	    /**
@@ -314,8 +339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dispatchSliderEvent('before', 'init');
 	
 	        prefixes = (0, _detectPrefixes2.default)();
-	        options = _extends({}, _defaults2.default, opts);
-	
+	        options = Object.assign({}, _defaults2.default, opts);
 	        var _options4 = options,
 	            classNameFrame = _options4.classNameFrame,
 	            classNameSlideContainer = _options4.classNameSlideContainer,
