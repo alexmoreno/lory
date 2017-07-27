@@ -241,7 +241,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var duration = slideSpeed;
 	
 	        var nextSlide = direction ? index + 1 : index - 1;
-	        var maxOffset = Math.round(slidesWidth - frameWidth);
+	        // need to add margin right form js_slide
+	        var maxOffset = Math.round(slidesWidth - frameWidth) + slides.length * 14;
 	        //console.log('LETS SLIDE')
 	        dispatchSliderEvent('before', 'slide', {
 	            index: index,
@@ -261,8 +262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (infinite && direction === undefined) {
 	            nextIndex += infinite;
 	        }
-	        //console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
-	        //console.log('maxOffset: ', slides[nextIndex].offsetLeft)
+	
 	        //let nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
 	        // I hope it doesn't bug anywhere
 	        var nextOffset = slides[nextIndex].offsetLeft * -1;
@@ -286,9 +286,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * update the index with the nextIndex only if
 	         * the offset of the nextIndex is in the range of the maxOffset
 	         */
-	
-	        //console.log('next Index', nextIndex)
-	        //console.log('index', index)
+	        // console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
+	        // console.log('maxOffset: ', maxOffset)
+	        // console.log('next Index', nextIndex)
+	        // console.log('index', index)
 	
 	        if (slides[nextIndex].offsetLeft <= maxOffset) {
 	

@@ -141,7 +141,8 @@ export function lory (slider, opts) {
         let duration = slideSpeed;
 
         const nextSlide = direction ? index + 1 : index - 1;
-        const maxOffset = Math.round(slidesWidth - frameWidth);
+        // need to add margin right form js_slide
+        const maxOffset = Math.round(slidesWidth - frameWidth) + (slides.length * 14);
         //console.log('LETS SLIDE')
         dispatchSliderEvent('before', 'slide', {
             index,
@@ -161,8 +162,7 @@ export function lory (slider, opts) {
         if (infinite && direction === undefined) {
             nextIndex += infinite;
         }
-        //console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
-        //console.log('maxOffset: ', slides[nextIndex].offsetLeft)
+       
         //let nextOffset = Math.min(Math.max(slides[nextIndex].offsetLeft * -1, maxOffset * -1), 0);
         // I hope it doesn't bug anywhere
         let nextOffset = slides[nextIndex].offsetLeft * -1;
@@ -186,9 +186,10 @@ export function lory (slider, opts) {
          * update the index with the nextIndex only if
          * the offset of the nextIndex is in the range of the maxOffset
          */
-        
-        //console.log('next Index', nextIndex)
-        //console.log('index', index)
+        // console.log('offsetLeft: ', slides[nextIndex].offsetLeft)
+        // console.log('maxOffset: ', maxOffset)
+        // console.log('next Index', nextIndex)
+        // console.log('index', index)
 
         if (slides[nextIndex].offsetLeft <= maxOffset) {
         
