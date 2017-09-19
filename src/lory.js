@@ -142,7 +142,7 @@ export function lory (slider, opts) {
 
         const nextSlide = direction ? index + 1 : index - 1;
         // need to add margin right form js_slide
-        const maxOffset = Math.round(slidesWidth - frameWidth) + (slides.length * 14);
+        const maxOffset = Math.round(slidesWidth - frameWidth) + (slides.length * 16);
         //console.log('LETS SLIDE')
         dispatchSliderEvent('before', 'slide', {
             index,
@@ -191,10 +191,10 @@ export function lory (slider, opts) {
         // console.log('next Index', nextIndex)
         // console.log('index', index)
 
-        if (slides[nextIndex].offsetLeft <= maxOffset) {
+        //if (slides[nextIndex].offsetLeft <= maxOffset) {
         
             index = nextIndex;
-        }
+        //}
         
             
         //console.log('direction', direction)
@@ -321,15 +321,15 @@ export function lory (slider, opts) {
             rewindSpeed = 0;
         }
 
-        if (infinite) {
+        //if (infinite) {
             translate(slides[index + infinite].offsetLeft * -1, 0, null);
 
             index = index + infinite;
             position.x = slides[index].offsetLeft * -1;
-        } else {
-            translate(slides[index].offsetLeft * -1, rewindSpeed, ease);
-            position.x = slides[index].offsetLeft * -1;
-        }
+        //} else {
+            // translate(slides[index].offsetLeft * -1, rewindSpeed, ease);
+            // position.x = slides[index].offsetLeft * -1;
+        //}
 
         if (classNameActiveSlide) {
             setActiveElement(slice.call(slides), index);
